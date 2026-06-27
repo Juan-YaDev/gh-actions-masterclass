@@ -1,0 +1,35 @@
+name: 04 - Contextos y Variables
+
+# Variable de entorno a nivel de Workflow (disponible en todos los jobs)
+env:
+  GLOBAL_VAR: "Soy una variable global"
+
+on: [push, pull_request]
+
+jobs:
+  explorar_contextos:
+    runs-on: ubuntu-latest
+    # Variable de entorno a nivel de Job
+    env:
+      JOB_VAR: "Soy una variable del job"
+      
+    steps:
+      - name: Usando Variables de Entorno
+        run: |
+          echo "Variable Global: $GLOBAL_VAR"
+          echo "Variable de Job: $JOB_VAR"
+          
+      - name: Usando Contextos (La magia de ${{ }} )
+        run: |
+          echo "Usuario que disparó esto: ${{ github.actor }}"
+          echo "Nombre del repo: ${{ github.repository }}"
+          echo "Rama o Ref: ${{ github.ref }}"
+          echo "Evento que me llamó: ${{ github.event_name }}"
+          echo "Sistema Operativo del Runner: ${{ runner.os }}"
+          
+      - name: Creando mi propia variable de entorno dinámica
+        # Usamos $GITHUB_ENV para pasar variables a los SIGUIENTES steps.
+        run: echo "MI_VARIABLE_CUSTOM=Hola desde el step 3" >> $GITHUB_ENV
+        
+      - name: Leyendo la variable dinámica
+        run: echo "El valor es $MI_VARIABLE_CUSTOM"
