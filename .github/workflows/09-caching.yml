@@ -1,6 +1,6 @@
 name: 09 - Caching
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   sin_cache:
