@@ -5,7 +5,7 @@ on:
     types: [opened, synchronize]
 
 jobs:
-  validación_matricial:
+  validacion_matricial:
     runs-on: ${{ matrix.os }}
     permissions:
       contents: read
@@ -29,7 +29,7 @@ jobs:
 
   comentando_estado:
     runs-on: ubuntu-latest
-    needs: validación_matricial
+    needs: validacion_matricial
     permissions:
       pull-requests: write
 
