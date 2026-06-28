@@ -1,0 +1,53 @@
+name: 11 - Triggers Avanzados
+
+on:
+  # 1. Botón manual en la UI de GitHub
+  workflow_dispatch:
+    inputs:
+      entorno:
+        description: '¿A qué entorno quieres desplegar?'
+        required: true
+        default: 'staging'
+        type: choice
+        options: [staging, production]
+      debug_mode:
+        description: '¿Activar logs detallados?'
+        required: false
+        type: boolean
+
+  # 2. Cron Job (¡OJO! Todo en UTC. Este corre a las 00:00 UTC diario)
+  #schedule:
+  #  - cron: '0 0 * * *' # Comenta esta línea si no quieres que corra diario mientras practicas
+
+  # 3. Reacción a comentarios en Issues
+  issue_comment:
+    types: [created]
+
+  # 4. Reacción a revisiones de PRs
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  procesar_trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ¿Qué me disparó?
+        run: |
+          echo "Evento: ${{ github.event_name }}"
+          
+      - name: Lógica para workflow_dispatch
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          echo "Desplegando a: ${{ inputs.entorno }}"
+          echo "Modo debug: ${{ inputs.debug_mode }}"
+          
+      - name: Lógica para issue_comment
+        if: github.event_name == 'issue_comment'
+        run: |
+          echo "Alguien comentó en el issue #${{ github.event.issue.number }}"
+          echo "El comentario dice: ${{ github.event.comment.body }}"
+          # Aquí podrías hacer un if para ver si el comentario es "/help"
+          
+      - name: Lógica para pull_request_review
+        if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
+        run: echo "¡El PR #${{ github.event.pull_request.number}} fue APROBADO! Listo para merge."
