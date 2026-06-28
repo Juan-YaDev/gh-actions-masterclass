@@ -1,0 +1,37 @@
+name: 07 - Condicionales y Expresiones
+
+on: [push, pull_request]
+
+jobs:
+  job_solo_en_main:
+    # Condicional a nivel de JOB. 
+    # ¡OJO! github.ref devuelve 'refs/heads/main', no solo 'main'.
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mensaje de despliegue
+        run: echo "¡Esto solo corre si hay push a main!"
+
+  job_siempre_corre:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Paso que falla a propósito
+        id: paso_fallido # Le ponemos un ID para referenciarlo después
+        run: |
+          echo "Simulando un error..."
+          exit 1
+        continue-on-error: true # Permite que el workflow siga aunque este paso falle
+
+      - name: Paso condicional basado en el anterior
+        # Usamos el contexto 'steps' para verificar el resultado del paso anterior
+        if: steps.paso_fallido.outcome == 'failure'
+        run: echo "¡El paso anterior falló! Ejecutando plan de contingencia."
+
+      - name: Paso que SIEMPRE corre
+        if: always()
+        run: echo "Me ejecuto haya fallado o no el job. Útil para limpiar recursos."
+
+      - name: Paso condicional por contexto
+        # Solo corre si el actor (quien hizo el push) NO es un bot de dependabot
+        if: github.actor != 'dependabot[bot]'
+        run: echo "Hola humano ${{ github.actor }}, no eres un bot."
