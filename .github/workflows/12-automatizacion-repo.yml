@@ -1,0 +1,70 @@
+name: 12 - Automatización de Repo
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  # JOB 1: Etiquetar Issues por título
+  etiquetar-issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write # Necesario para modificar etiquetas
+    steps:
+      - name: Etiquetar según título
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const title = context.payload.issue.title.toLowerCase();
+            const issueNumber = context.payload.issue.number;
+            let labelsToAdd = [];
+            
+            if (title.includes('bug') || title.includes('error') || title.includes('fallo')) {
+              labelsToAdd.push('bug');
+            }
+            if (title.includes('doc') || title.includes('documentación')) {
+              labelsToAdd.push('documentation');
+            }
+            
+            if (labelsToAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: labelsToAdd
+              });
+              console.log(`Etiquetas añadidas: ${labelsToAdd.join(', ')}`);
+            }
+
+  # JOB 2: Validar título del PR (Conventional Commits)
+  validar-titulo-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validar formato del título
+        # Acción del marketplace súper popular para esto
+        uses: amannn/action-semantic-pull-request@v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          # Tipos permitidos (puedes personalizarlos)
+          types: |
+            fix
+            feat
+            docs
+            chore
+            refactor
+
+  # JOB 3: Dar la bienvenida
+  bienvenida:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Saludar al nuevo contribuidor
+        uses: actions/first-interaction@v1
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          pr-message: '¡Hola! 🎉 Gracias por tu primer Pull Request. Un maintainer lo revisará pronto. ¡Bienvenido a la comunidad!'
