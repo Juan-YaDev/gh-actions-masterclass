@@ -1,13 +1,14 @@
 name: 15 - El Guardián del Repositorio
 
 on:
-  pull_request: [opened, synchronize]
+  pull_request:
+    types: [opened, synchronize]
 
 jobs:
   validación_matricial:
     runs-on: ${{ matrix.os }}
     permissions:
-      contents: read      
+      contents: read
 
     strategy:
       matrix:
@@ -15,16 +16,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Configurar Node ${{ matrix.os }}
+
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          
+
       - name: Ejecutar tests
         run: |
-          echo "Corriendo tests en OS: ${{ matrix.os }}"
-           
+          echo "Corriendo tests en ${{ matrix.os }}"
+          # Aquí irían tus comandos reales (npm test, etc.)
+
   comentando_estado:
     runs-on: ubuntu-latest
     needs: validación_matricial
@@ -32,26 +34,25 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Comentar en el PR
+      - name: Comentar resultado en el PR
         uses: actions/github-script@v7
         with:
           script: |
-            const { context, github } = require('@actions/github');
-            const { pull_request } = context.payload;
-
-            // Verificar si todos los jobs de validación_matricial pasaron
-            const conclusion = context.payload.workflow_run.conclusion;
+            const conclusion = '${{ needs.validación_matricial.result }}';
+            
             let commentBody = '';
-
+            
             if (conclusion === 'success') {
-              commentBody = '✅ Todos los tests pasaron correctamente en todas las plataformas.';
+              commentBody = '✅ **Todos los tests pasaron correctamente** en todas las plataformas (Ubuntu y Windows).';
+            } else if (conclusion === 'failure') {
+              commentBody = '❌ **Algunos tests fallaron**. Revisa los logs del job "validación_matricial".';
             } else {
-              commentBody = '❌ Algunos tests fallaron. Por favor, revisa los logs de los jobs para más detalles.';
+              commentBody = '⚠️ El workflow terminó con estado: ' + conclusion;
             }
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: pull_request.number,
-              body: commentBody,
-            });      
+              issue_number: context.issue.number,
+              body: commentBody
+            });
