@@ -1,0 +1,45 @@
+name: 09 - Caching
+
+on: [push]
+
+jobs:
+  sin_cache:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Instalar sin cache
+        run: npm install
+
+  con_cache_integrado:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm' # ¡Magia! El setup-node maneja el cache automáticamente.
+      - name: Instalar con cache
+        run: npm install
+
+  con_cache_manual:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache manual de una carpeta custom
+        uses: actions/cache@v4
+        with:
+          # La ruta a cachear
+          path: ~/.cache/mi-carpeta-custom
+          # La clave del cache. Si el package-lock cambia, la clave cambia y se genera un cache nuevo.
+          key: ${{ runner.os }}-custom-cache-${{ hashFiles('**/package-lock.json') }}
+          # Qué hacer si no encuentra la clave exacta (fallback)
+          restore-keys: |
+            ${{ runner.os }}-custom-cache-
+            
+      - name: Simular descarga pesada
+        run: |
+          mkdir -p ~/.cache/mi-carpeta-custom
+          echo "Datos pesados descargados" > ~/.cache/mi-carpeta-custom/datos.bin
