@@ -1,0 +1,53 @@
+name: 04 - Contextos y Variables en GitHub Actions
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+
+# Variables de entorno globales (disponibles en todo el workflow)
+env:
+  GLOBAL_VAR: "Soy una variable global"
+  ENVIRONMENT: "production"
+
+jobs:
+  explorar_contextos:
+    runs-on: ubuntu-latest
+    
+    # Variables a nivel de Job
+    env:
+      JOB_VAR: "Soy una variable del job"
+      JOB_ENV: "staging"
+
+    steps:
+      - name: Usando Variables de Entorno
+        run: |
+          echo "🌍 Global: $GLOBAL_VAR"
+          echo "📍 Job: $JOB_VAR"
+          echo "🔧 Environment: $ENVIRONMENT"
+
+      - name: Usando Contextos de GitHub
+        run: |
+          echo "👤 Actor: ${{ github.actor }}"
+          echo "📦 Repositorio: ${{ github.repository }}"
+          echo "🌿 Branch/Ref: ${{ github.ref }}"
+          echo "🔄 Evento: ${{ github.event_name }}"
+          echo "🖥️ Runner OS: ${{ runner.os }}"
+          echo "📍 SHA del commit: ${{ github.sha }}"
+          echo "🔀 Pull Request: ${{ github.event.pull_request.number }}"
+
+      - name: Crear variable dinámica para siguientes steps
+        run: |
+          echo "MI_VARIABLE_CUSTOM=Hola desde el step anterior" >> $GITHUB_ENV
+          echo "FECHA_HORA=$(date +'%Y-%m-%d %H:%M:%S')" >> $GITHUB_ENV
+
+      - name: Usar variable dinámica
+        run: |
+          echo "📌 MI_VARIABLE_CUSTOM = $MI_VARIABLE_CUSTOM"
+          echo "🕒 Fecha y hora = $FECHA_HORA"
+
+      - name: Ejemplo con outputs (recomendado entre jobs)
+        id: generar_datos
+        run: |
+          echo "random_number=$RANDOM" >> $GITHUB_OUTPUT
+          echo "status=success" >> $GITHUB_OUTPUT

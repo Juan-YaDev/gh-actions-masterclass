@@ -1,0 +1,24 @@
+name: 03 - Marketplace y Código
+
+on: [push, pull_request]
+
+jobs:
+  build-y-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Clonar el repositorio
+        # ¡CRUCIAL! Sin esto, el runner no tiene tu código.
+        uses: actions/checkout@v4 
+
+      - name: 2. Configurar entorno de Node.js
+        # Instala Node.js en el runner.
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Puedes cambiar a '18' o '22'
+
+      - name: 3. Verificar que Node está instalado
+        run: node -v
+
+      - name: 4. Ejecutar nuestro código
+        # Ahora sí podemos acceder a src/app.js
+        run: node src/app.js 

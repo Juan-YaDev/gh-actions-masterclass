@@ -1,0 +1,34 @@
+# Esto es un comentario en YAML. El nombre del workflow que verás en la UI de GitHub.
+name: 01 - Anatomía y YAML Básico
+
+# El Trigger (Evento). Por ahora, solo correrá cuando hagas push a cualquier rama.
+on: push
+
+# Los Jobs. Aquí definimos las tareas paralelas o secuenciales.
+jobs:
+  # ID del job (debe ser único, sin espacios, usa guiones bajos).
+  explorar_entorno:
+    # El Runner. ¿Dónde se ejecuta? (Ubuntu, Windows, Mac).
+    runs-on: ubuntu-latest 
+    
+    # Los Steps. Se ejecutan en orden, de arriba a abajo.
+    steps:
+      - name: Paso 1 - Saludo básico
+        run: echo "¡Hola Mundo! Estoy corriendo en un Runner."
+
+      - name: Paso 2 - Comandos de shell y strings multilínea
+        # El símbolo '|' en YAML permite escribir strings en múltiples líneas.
+        run: |
+          echo "Listando archivos del directorio actual:"
+          ls -la
+          echo "Mostrando la versión de Node por defecto:"
+          node -v || echo "Node no está instalado por defecto"
+
+      - name: Paso 3 - Simulando un error
+        # Si un step falla, el job se detiene y los siguientes no corren.
+        run: |
+          echo "Este paso va a fallar a propósito..."
+          exit 1 
+          
+      - name: Paso 4 - Este paso NO debería ejecutarse
+        run: echo "Si ves esto, algo está mal."

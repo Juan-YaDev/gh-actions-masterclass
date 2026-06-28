@@ -1,0 +1,31 @@
+name: 05 - El CI Básico Perfecto
+
+on:
+  pull_request:
+    branches: [ main ]
+
+env:
+  GLOBAL_VAR: "CI"
+
+jobs:
+  final-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Imprimiendo logs
+        run: |
+          echo "Ejecutando CI para el PR #${{ github.event.pull_request.number }}..."
+          echo "Creado por el usuario: ${{ github.actor }}"
+      
+      - name: Clonando el repositorio
+        # sintaxis uses: owner/repo@version
+        uses: actions/checkout@v4
+      
+      - name: instalando python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      - name: Creando archivo desde workflow
+        run: |
+          echo "print('Hola desde Python!, la variable global es: $GLOBAL_VAR')" > script.py
+          python script.py

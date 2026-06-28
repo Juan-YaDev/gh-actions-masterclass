@@ -1,0 +1,25 @@
+name: 02 - Triggers Avanzados
+
+on:
+  # Trigger 1: Push
+  push:
+    branches:
+      - main       # Solo corre si el push es a 'main'
+      - 'release/*' # Usa wildcards: corre en release/v1, release/v2, etc.
+    paths-ignore:
+      - '**.md'    # Ignora si solo se modificaron archivos Markdown
+      - 'docs/**'  # Ignora si los cambios fueron en la carpeta docs/
+
+  # Trigger 2: Pull Request
+  pull_request:
+    branches:
+      - main       # Solo corre si el PR tiene como destino 'main'
+    paths:
+      - 'src/**'   # SOLO corre si hay cambios en la carpeta src/
+
+jobs:
+  imprimir_trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ¿Qué me disparó?
+        run: echo "Este workflow corrió porque hubo un cambio relevante."

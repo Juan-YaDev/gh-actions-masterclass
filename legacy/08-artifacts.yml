@@ -1,0 +1,38 @@
+name: 08 - Artifacts
+
+on: [push]
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Simular compilación
+        run: |
+          mkdir -p dist
+          echo "<h1>Mi App Compilada</h1>" > dist/index.html
+          echo "console.log('Hola');" > dist/app.js
+          echo "Archivo generado en $(date)" > dist/build-info.txt
+          
+      - name: Subir Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mi-build-final # Nombre del artifact
+          path: dist/          # Qué archivos subir
+          retention-days: 1    # Cuántos días guardarlo (ahorra espacio)
+
+  probar_y_desplegar:
+    needs: construir # Este job espera a que 'construir' termine exitosamente
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: mi-build-final
+          path: downloaded-dist # Dónde guardarlo en esta nueva máquina
+
+      - name: Verificar que los archivos llegaron
+        run: |
+          echo "Contenido de la carpeta descargada:"
+          ls -la downloaded-dist
+          echo "Contenido del info:"
+          cat downloaded-dist/build-info.txt
