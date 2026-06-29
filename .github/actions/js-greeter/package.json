@@ -1,0 +1,9 @@
+{
+  "name": "js-greeter",
+  "version": "1.0.0",
+  "description": "Custom JS Action",
+  "main": "index.js",
+  "dependencies": {
+    "@actions/core": "^1.11.1"
+  }
+}
