@@ -1,0 +1,13 @@
+# .github/actions/docker-cowsay/action.yml
+name: 'Docker Cowsay'
+description: 'Una vaca que dice tu mensaje'
+inputs:
+  message:
+    description: 'El mensaje de la vaca'
+    required: true
+    default: 'Muuu'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.message }}

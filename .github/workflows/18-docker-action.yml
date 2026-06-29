@@ -1,0 +1,14 @@
+name: 18 - Custom Docker Action
+
+on: [push]
+
+jobs:
+  docker-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: La vaca habla
+        uses: ./.github/actions/docker-cowsay
+        with:
+          message: '¡Docker Actions es genial!'
