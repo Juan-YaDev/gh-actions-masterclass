@@ -9,7 +9,7 @@ jobs:
       # ¡Toda la magia de arriba en una sola línea!
       - name: Configurar entorno
         id: setup
-        uses: ./.github/actions/setup-my-project
+        uses: ./.github/actions/setup-my-project/
         with:
           node-version: '18'
 
