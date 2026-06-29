@@ -1,11 +1,12 @@
-# .github/actions/setup-my-project/action.yml
 name: 'Setup My Project'
 description: 'Configura Node, instala dependencias y cachea todo'
+
 inputs:
   node-version:
     description: 'Versión de Node'
     required: false
     default: '20'
+
 outputs:
   cache-hit:
     description: 'Si hubo hit en el cache'
@@ -21,14 +22,9 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
-
-    - name: Cache NPM
-      id: npm-cache
-      uses: actions/cache@v4
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        cache: 'npm'                    # Mejor forma recomendada
 
     - name: Instalar dependencias
-      shell: bash # ¡OBLIGATORIO en composite actions!
-      run: npm ci || npm install
+      shell: bash
+      run: |
+        npm ci || npm install

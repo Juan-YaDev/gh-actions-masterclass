@@ -1,20 +1,22 @@
 name: 16 - Usando Composite Action
 
-on: [push]
+on:
+  push:
+    branches: [main, develop]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      # ¡Toda la magia de arriba en una sola línea!
       - name: Configurar entorno
         id: setup
-        uses: ./.github/actions/setup-my-project/
+        uses: ./.github/actions/setup-my-project
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: ¿Hubo cache?
         run: echo "Cache hit? ${{ steps.setup.outputs.cache-hit }}"
 
       - name: Correr tests
-        run: npm test || echo "No hay tests, pero el setup funcionó"
+        run: npm test || echo "No hay tests definidos"
