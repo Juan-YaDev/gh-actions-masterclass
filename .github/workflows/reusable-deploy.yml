@@ -1,6 +1,5 @@
 name: Deploy Reutilizable
 
-# ¡El trigger mágico!
 on:
   workflow_call:
     inputs:
@@ -26,16 +25,15 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       url: ${{ steps.set_url.outputs.final_url }}
+
     steps:
       - name: Desplegando...
         run: |
-          echo "Desplegando versión ${{ inputs.version }} en ${{ inputs.entorno }}"
-          echo "Usando el token secreto (oculto): ${{ secrets.DEPLOY_TOKEN }}"
-          
+          echo "🚀 Desplegando versión ${{ inputs.version }} en ${{ inputs.entorno }}"
+          echo "🔑 Usando token secreto (oculto)"
+
       - name: Generar URL
         id: set_url
         run: echo "final_url=https://${{ inputs.entorno }}.miapp.com" >> $GITHUB_OUTPUT
 
-      - name: Exponer Output del Job
-        # Esto es necesario para que el workflow reutilizable pueda exponer el output
-        run: echo "URL generada: ${{ steps.set_url.outputs.final_url }}"
+      # Este step no es necesario para exponer el output
