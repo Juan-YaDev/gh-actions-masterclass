@@ -13,5 +13,5 @@ outputs:
     description: 'La hora del saludo'
 
 runs:
-  using: 'node20'          # ← Cambia a node20 (más estable)
+  using: 'node20'
   main: 'index.js'
