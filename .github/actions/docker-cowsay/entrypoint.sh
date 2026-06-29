@@ -3,10 +3,8 @@
 
 MESSAGE="${1:-Muuu!}"
 
-echo "🐮 Ejecutando dentro del contenedor Docker (Alpine)..."
-echo "========================================"
-
-# Ejecutar cowsay
+echo "🐮 Docker Action - Cowsay ejecutándose..."
+echo "=========================================="
 cowsay "$MESSAGE"
-
-echo "========================================"
+echo "=========================================="
+echo "✅ Mensaje entregado por la vaca"
