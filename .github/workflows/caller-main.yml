@@ -1,0 +1,21 @@
+name: Llamador Principal
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  llamar_deploy:
+    uses: ./.github/workflows/reusable-deploy.yml # Ruta local al reusable
+    with:
+      entorno: 'produccion'
+      version: '1.0.4'
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Pasamos un secreto
+
+  usar_output:
+    needs: llamar_deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Usar el output del workflow reutilizable
+        run: echo "La URL de producción es ${{ needs.llamar_deploy.outputs.deploy_url }}"
