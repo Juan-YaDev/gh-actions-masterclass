@@ -1,0 +1,57 @@
+name: 14 - Permisos y Seguridad
+
+on: [push]
+
+# 1. Permisos a nivel de WORKFLOW (Afecta a todos los jobs)
+# Cambiamos el comportamiento por defecto. Todo es 'read' o 'none' a menos que se diga lo contrario.
+permissions:
+  contents: read      # Puede leer el código (necesario para checkout)
+  actions: read       # Puede leer otros workflows
+  # Nota: No le damos 'write' a nada a nivel global.
+
+jobs:
+  job_lectura:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Leer archivos
+        run: ls -la
+        
+  job_escritura_issues:
+    runs-on: ubuntu-latest
+    # 2. Permisos a nivel de JOB (Sobrescribe los del workflow para ESTE job)
+    permissions:
+      contents: read
+      issues: write   # Le damos permiso EXCLUSIVO para escribir en issues
+      
+    steps:
+      - name: Intentar crear un issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Issue creado con permisos restringidos',
+              body: 'Este job tiene permisos de escritura SOLO en issues.'
+            });
+            
+  job_fallido_por_permisos:
+    runs-on: ubuntu-latest
+    # Hereda los permisos del workflow (contents: read, issues: none)
+    steps:
+      - name: Intentar crear un issue (Fallará)
+        uses: actions/github-script@v7
+        with:
+          script: |
+            try {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: 'Esto debería fallar',
+                body: 'No tengo permisos de issues: write'
+              });
+            } catch (error) {
+              console.log("¡Error esperado! El token no tiene permisos para esto.");
+              // En un caso real, podrías hacer core.setFailed() aquí
+            }

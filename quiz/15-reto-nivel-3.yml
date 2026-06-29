@@ -1,0 +1,58 @@
+name: 15 - El Guardián del Repositorio
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  validacion_matricial:
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Ejecutar tests
+        run: |
+          echo "Corriendo tests en ${{ matrix.os }}"
+          # Aquí irían tus comandos reales (npm test, etc.)
+
+  comentando_estado:
+    runs-on: ubuntu-latest
+    needs: validacion_matricial
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Comentar resultado en el PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const conclusion = '${{ needs.validacion_matricial.result }}';
+            
+            let commentBody = '';
+            
+            if (conclusion === 'success') {
+              commentBody = '✅ **Todos los tests pasaron correctamente** en todas las plataformas (Ubuntu y Windows).';
+            } else if (conclusion === 'failure') {
+              commentBody = '❌ **Algunos tests fallaron**. Revisa los logs del job "validacion_matricial".';
+            } else {
+              commentBody = '⚠️ El workflow terminó con estado: ' + conclusion;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: commentBody
+            });

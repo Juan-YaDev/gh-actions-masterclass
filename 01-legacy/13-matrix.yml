@@ -1,0 +1,43 @@
+name: 13 - Matrix Builds
+
+on: [push]
+
+jobs:
+  test-multi-entorno:
+    runs-on: ${{ matrix.os }}
+    # Aquí definimos la matriz
+    strategy:
+      # Si un job de la matriz falla, ¿cancelamos los demás? (false = deja que terminen todos)
+      fail-fast: false 
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: [18, 20]
+        
+        # EXCLUDE: No correr esta combinación específica
+        exclude:
+          - os: windows-latest
+            node-version: 18
+            
+        # INCLUDE: Añadir variables extra a combinaciones específicas
+        include:
+          - os: ubuntu-latest
+            node-version: 20
+            is-production-ready: true # Variable custom que solo existirá en este combo
+
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configurar Node ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          
+      - name: Imprimir entorno
+        run: |
+          echo "Corriendo en OS: ${{ matrix.os }}"
+          echo "Node versión: ${{ matrix.node-version }}"
+          
+      - name: Paso exclusivo (Solo Ubuntu + Node 20)
+        # Usamos la variable custom que inyectamos con 'include'
+        if: matrix.is-production-ready == true
+        run: echo "¡Este paso solo corre en la combinación Ubuntu + Node 20!"
