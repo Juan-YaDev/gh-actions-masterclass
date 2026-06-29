@@ -1,12 +1,11 @@
 # .github/actions/docker-cowsay/Dockerfile
-# Usamos una imagen base ligera que ya tiene cowsay
-FROM docker/whalesay:latest
+FROM alpine:latest
 
-# Copiamos nuestro script
+# Instalar cowsay
+RUN apk add --no-cache cowsay
+
+# Copiar entrypoint
 COPY entrypoint.sh /entrypoint.sh
-
-# Le damos permisos de ejecución
 RUN chmod +x /entrypoint.sh
 
-# El punto de entrada
 ENTRYPOINT ["/entrypoint.sh"]
