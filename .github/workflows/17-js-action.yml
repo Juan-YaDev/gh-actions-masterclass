@@ -1,0 +1,18 @@
+name: 17 - Custom JS Action
+
+on: [push]
+
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Saludar
+        id: hello
+        uses: ./.github/actions/js-greeter
+        with:
+          who-to-greet: 'Arquitecto CI/CD'
+          
+      - name: Obtener hora
+        run: echo "La hora fue ${{ steps.hello.outputs.time }}"
