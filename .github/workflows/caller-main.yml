@@ -6,7 +6,7 @@ on:
 
 jobs:
   llamar_deploy:
-    uses: ./.github/workflows/reusable-deploy.yml # Ruta local al reusable
+    uses: .github/workflows/reusable-deploy.yml # Ruta local al reusable
     with:
       entorno: 'produccion'
       version: '1.0.4'
