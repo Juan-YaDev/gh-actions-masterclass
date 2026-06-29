@@ -1,14 +1,17 @@
 # .github/actions/js-greeter/action.yml
 name: 'JS Greeter'
 description: 'Saluda y genera un reporte'
+
 inputs:
   who-to-greet:
     description: 'A quién saludar'
     required: true
     default: 'Mundo'
+
 outputs:
   time:
     description: 'La hora del saludo'
+
 runs:
-  using: 'node20'
-  main: 'index.js' # Apunta a tu script
+  using: 'node20'          # ← Cambia a node20 (más estable)
+  main: 'index.js'

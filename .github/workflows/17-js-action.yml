@@ -1,6 +1,8 @@
 name: 17 - Custom JS Action
 
-on: [push]
+on:
+  push:
+    branches: [main, develop]
 
 jobs:
   greet:
@@ -15,4 +17,5 @@ jobs:
           who-to-greet: 'Arquitecto CI/CD'
           
       - name: Obtener hora
-        run: echo "La hora fue ${{ steps.hello.outputs.time }}"
+        run: |
+            echo "🕒 La hora del saludo fue: ${{ steps.hello.outputs.time }}"
